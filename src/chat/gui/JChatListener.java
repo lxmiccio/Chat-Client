@@ -1,4 +1,4 @@
-package chat.client.gui.chat;
+package chat.gui;
 
 import java.awt.event.*;
 import java.io.*;
@@ -20,14 +20,11 @@ public class JChatListener implements ActionListener, WindowListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (actionEvent.getSource() == this.jChat.getBtnSend()) {
-            try {
-                this.jChat.getClient().getObjectOutputStream().writeUTF(this.jChat.getTxtMessage().getText());
-                this.jChat.getClient().getObjectOutputStream().flush();
-            } catch (IOException exception) {
-                System.err.println("IOException");
-                exception.printStackTrace();
-            }
+        try {
+            this.jChat.getClient().getObjectOutputStream().writeUTF(this.jChat.getTxtMessage().getText());
+            this.jChat.getClient().getObjectOutputStream().flush();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -36,7 +33,6 @@ public class JChatListener implements ActionListener, WindowListener {
         try {
             this.jChat.getClient().getObjectOutputStream().writeUTF("Exit");
             this.jChat.getClient().getObjectOutputStream().flush();
-            
         } catch (IOException exception) {
             exception.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package chat;
 
-import chat.client.gui.form.*;
+import chat.gui.JForm;
 import javax.swing.*;
 
 /**

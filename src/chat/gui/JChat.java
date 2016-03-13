@@ -1,6 +1,5 @@
-package chat.client.gui.chat;
+package chat.gui;
 
-import chat.client.*;
 import chat.engine.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -23,14 +22,10 @@ public class JChat extends JFrame {
         this.client = client;
         this.pnlServices = new JPanel();
         this.pnlServices.setLayout(new GridBagLayout());
-
         this.scrPnServices = new JScrollPane();
         this.scrPnServices.setViewportView(this.pnlServices);
-
         this.txtMessage = new JTextField();
-
         this.btnSend = new JButton("Send");
-
         this.gridBagConstraints = new GridBagConstraints();
         this.gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         this.gridBagConstraints.gridheight = 1;
@@ -42,14 +37,9 @@ public class JChat extends JFrame {
         this.gridBagConstraints.weighty = 0;
     }
 
-    public Client getClient() {
-        return client;
-    }
-
     public void initialize() {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
-
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         gridBagConstraints.gridheight = 1;
         gridBagConstraints.gridwidth = 1;
@@ -59,7 +49,6 @@ public class JChat extends JFrame {
         gridBagConstraints.weightx = 1;
         gridBagConstraints.weighty = 1;
         this.add(this.scrPnServices, gridBagConstraints);
-
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridheight = 1;
         gridBagConstraints.gridwidth = 1;
@@ -69,7 +58,6 @@ public class JChat extends JFrame {
         gridBagConstraints.weightx = 1;
         gridBagConstraints.weighty = 0;
         this.add(this.txtMessage, gridBagConstraints);
-
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridheight = 1;
         gridBagConstraints.gridwidth = 1;
@@ -79,15 +67,17 @@ public class JChat extends JFrame {
         gridBagConstraints.weightx = 1;
         gridBagConstraints.weighty = 0;
         this.add(this.btnSend, gridBagConstraints);
-
         this.setSize(new Dimension(750, 500));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setTitle("Chat");
         this.setVisible(true);
-
         this.btnSend.addActionListener(new JChatListener(this));
         this.addWindowListener(new JChatListener(this));
+    }
+
+    public Client getClient() {
+        return client;
     }
 
     public void addMessage(Message message) {
@@ -100,20 +90,13 @@ public class JChat extends JFrame {
         };
         this.scrPnServices.getVerticalScrollBar().addAdjustmentListener(adjustmentListener);
 
-        JMessage jMessage = new JMessage(message);
-        jMessage.initialize();
-
         this.gridBagConstraints.gridy++;
-        this.pnlServices.add(jMessage, this.gridBagConstraints);
+        this.pnlServices.add(message.getJPanel(), this.gridBagConstraints);
 
         this.pnlServices.revalidate();
     }
 
     public JTextField getTxtMessage() {
         return txtMessage;
-    }
-
-    public JButton getBtnSend() {
-        return btnSend;
     }
 }

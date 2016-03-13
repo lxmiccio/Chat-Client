@@ -1,7 +1,6 @@
-package chat.client;
+package chat.engine;
 
-import chat.client.gui.chat.*;
-import chat.engine.*;
+import chat.gui.JChat;
 import java.io.*;
 import java.net.*;
 
@@ -12,10 +11,10 @@ import java.net.*;
 public class Client implements Runnable {
 
     private JChat jChat;
-    private Socket socket;
-    private String name;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
+    private Socket socket;
+    private String name;
 
     public Client(String serverAddress, int port, String name) {
         if (serverAddress == null || serverAddress.length() <= 0) {
@@ -26,9 +25,8 @@ public class Client implements Runnable {
         }
         try {
             this.socket = new Socket(serverAddress, port);
-
-            this.jChat = new JChat(this);
-            this.jChat.initialize();
+            this.objectOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -36,6 +34,36 @@ public class Client implements Runnable {
             this.name = "Anonymous";
         } else {
             this.name = name;
+        }
+        this.jChat = new JChat(this);
+        this.jChat.initialize();
+    }
+
+    @Override
+    public void run() {
+        this.writeName();
+        this.readMessage();
+    }
+
+    private void writeName() {
+        try {
+            this.objectOutputStream.writeUTF(this.name);
+            this.objectOutputStream.flush();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void readMessage() {
+        boolean listen = true;
+        while (listen) {
+            try {
+                this.jChat.addMessage((Message) this.objectInputStream.readObject());
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            } catch (ClassNotFoundException exception) {
+                exception.printStackTrace();
+            }
         }
     }
 
@@ -45,39 +73,5 @@ public class Client implements Runnable {
 
     public ObjectOutputStream getObjectOutputStream() {
         return objectOutputStream;
-    }
-
-    @Override
-    public void run() {
-        try {
-            this.objectOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
-            this.objectOutputStream.flush();
-            this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
-            System.out.println("asad");
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        try {
-            this.objectOutputStream.writeUTF(this.name);
-            this.objectOutputStream.flush();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        boolean listen = true;
-        while (listen) {
-            try {
-                Message m = (Message) this.objectInputStream.readObject();
-                System.out.println(m.getText());
-                this.jChat.addMessage(m);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            } catch (ClassNotFoundException exception) {
-                exception.printStackTrace();
-            }
-        }
-    }
-
-    public Socket getSocket() {
-        return socket;
     }
 }
